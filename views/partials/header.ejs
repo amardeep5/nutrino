@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <title>Nutrino</title>
+    <script src="https://kit.fontawesome.com/ea035a5efc.js" crossorigin="anonymous"></script>
+
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <link rel="stylesheet" href="/style.css">
+    <link rel="icon" href="http://www.yourwebsite.com/favicon.png">
+
+  </head>
+  <body>
+    <nav class="navbar navbar-expand-lg sticky-top" style="background-color:#242582;">
+                <div class="container-fluid">
+                  <a class="navbar-brand" href="/">
+
+                    Nutrino
+                  </a>
+
+
+            <div class="nav navbar navbar-right" style=" text-align: center;">
+              <%if(!currentUser){%>
+                <button type="button" class="btn btn-outline-danger btn-sm" style=" text-align: center;margin-right: 40px;"><a href="/login" style="color:#f64c72;margin-right: 40px;" >Login</a></button>
+                <button type="button" class="btn btn-outline-danger btn-sm" style=" text-align: center;margin-right: 40px;"><a href="/signup" style="color:#f64c72;margin-right: 40px;" >Sign Up</a></button>
+              <%}else{%>
+                 <a href="/my-account" style="color:white ;margin-right: 40px;">Hi <%=currentUser.username%> !</a>
+                 <div class="nav-item dropdown" style="margin-right:30px; margin-left:10px">
+                    <a class="nav-link dropdown-toggle btn btn-danger"  style="color:white;" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                      Posts
+                    </a>
+                    <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                      <a class="dropdown-item" href="/all-posts">All Posts</a>
+                      <hr>
+                      <a class="dropdown-item" href="/create-post">Create Post</a>
+                    </div>
+                  </div>
+                 <button type="button" class="btn btn-outline-danger btn-sm" style=" text-align: center;margin-right: 40px;"><a href="/logout" style="color:#f64c72;" >Log Out</a></button>
+              <%}%>
+</div>
+
+            </div>
+        </div>
+    </nav>
+    <!-- <nav  style="width: 800px;
+        background-color: #e3f2fd;
+        margin-top: 40‒;
+        margin-top: 20px;
+        margin-bottom: 80px;" class="navbar navbar-expand-lg navbar-light  mx-auto">
+        <p>food trivia</p>
+    </nav> -->

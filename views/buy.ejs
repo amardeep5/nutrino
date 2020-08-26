@@ -1,0 +1,44 @@
+<%- include('partials/header') %>
+
+     <div class="row justify-content-center" style="margin-top:80px; margin-bottom:80px;">
+       <div class="card border-primary h-100 d-inline-block " >
+
+         <div class="card-body d-flex flex-column text-center">
+             <span class="mt-auto"><h5 class="card-title mt-auto"><%=un%></h5></span>
+             <span class="mt-auto"><h6 class=" mt-auto"><%=price%></h6></span>
+             <button type="submit" class="btn btn-info btn-lg" data-toggle="modal" data-target="#myModal">Continue</button>
+
+         </div>
+     </div>
+</div>
+
+<div id="myModal" class="modal fade" role="dialog">
+  <div class="modal-dialog">
+
+    <!-- Modal content-->
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+      </div>
+      <div class="modal-body">
+        <form class="" action="/buy/confirmation" method="post">
+          <div class="form-group">
+            <label for="InputName">UserName</label>
+            <input type="name" class="form-control" id="InputName" placeholder="UserName" name="username">
+          </div>
+          <div class="form-group">
+            <label for="InputEmail1">Email address</label>
+            <input type="email" class="form-control" id="InputEmail1" aria-describedby="emailHelp" placeholder="Enter email" name="email">
+            <small id="emailHelp" class="form-text text-muted">We'll never share your email with anyone else.</small>
+          </div>
+          <button type="submit" class="btn btn-success btn-lg">Buy</button>
+          <form/>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+
+  </div>
+</div>
+<%- include('partials/footer') %>

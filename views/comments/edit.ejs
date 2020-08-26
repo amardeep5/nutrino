@@ -1,0 +1,15 @@
+<%- include('../partials/header') %>
+<nav aria-label="breadcrumb">
+  <ol class="breadcrumb">
+    <li class="breadcrumb-item " aria-current="page">Home</li>
+    <li class="breadcrumb-item active" aria-current="page">Post</li>
+    <li class="breadcrumb-item active" aria-current="page">Comment Edit</li>
+  </ol>
+</nav>
+<div class="container justify-content-center">
+  <form class="" action="/posts/<%=id%>/comments/<%=comment._id%>/edit" method="post">
+    <input type="text" name="comment" value="<%=comment.text%>">
+    <button type="submit" class="btn btn-warning">Edit</button>
+  </form>
+</div>
+<%- include('../partials/footer') %>

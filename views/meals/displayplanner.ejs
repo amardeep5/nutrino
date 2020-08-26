@@ -1,0 +1,67 @@
+<%- include('../partials/header') %>
+<nav aria-label="breadcrumb">
+  <ol class="breadcrumb">
+    <li class="breadcrumb-item " aria-current="page">Home</li>
+    <li class="breadcrumb-item " aria-current="page">Meal Planner</li>
+    <li class="breadcrumb-item active" aria-current="page">Your Plan</li>
+  </ol>
+</nav>
+<div class="container">
+  <div class="row">
+    <div class="col-md-6">
+      <h3>Breakfast</h3>
+    </div>
+    <div class="col-md-6 justify-content-center">
+      <div class="card text-white bg-info mb-3 text-center" style="max-width: 18rem;">
+        <div class="card-header">Dish</div>
+        <div class="card-body">
+          <h5 class="card-title"><%=meals.meals[0].title%></h5>
+          <p class="card-text">Ready in <%=meals.meals[0].readyInMinutes%> minutes</p>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="row justify-content-center">
+    <div class="col-md-6">
+      <h3>Lunch</h3>
+    </div>
+    <div class="col-md-6">
+      <div class="card text-white bg-info mb-3 text-center" style="max-width: 18rem;">
+        <div class="card-header">Dish</div>
+        <div class="card-body">
+          <h5 class="card-title"><%=meals.meals[1].title%></h5>
+          <p class="card-text">Ready in <%=meals.meals[1].readyInMinutes%> minutes</p>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="row justify-content-center">
+    <div class="col-md-6">
+      <h3>Dinner</h3>
+    </div>
+    <div class="col-md-6">
+      <div class="card text-white bg-info mb-3 text-center" style="max-width: 18rem;">
+        <div class="card-header">Dish</div>
+        <div class="card-body">
+          <h5 class="card-title"><%=meals.meals[2].title%></h5>
+          <p class="card-text">Ready in <%=meals.meals[2].readyInMinutes%> minutes</p>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="row justify-content-center">
+    <div class="card text-center" style="width: 18rem;">
+      <img src="https://www.heart.org/-/media/images/healthy-living/healthy-eating/superfoods.png" class="card-img-top" alt="...">
+      <div class="card-body">
+        <h5 class="card-title">Nutrients Table</h5>
+      </div>
+      <ul class="list-group list-group-flush">
+        <li class="list-group-item">Calorie -> <%=meals.nutrients.calories%></li>
+        <li class="list-group-item">Protein -> <%=meals.nutrients.protein%></li>
+        <li class="list-group-item">Fat -> <%=meals.nutrients.fat%></li>
+        <li class="list-group-item">Carbohydrate -> <%=meals.nutrients.carbohydrate%></li>
+      </ul>
+    </div>
+  </div>
+</div>
+<%- include('../partials/footer') %>

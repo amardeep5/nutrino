@@ -1,0 +1,52 @@
+<%- include('../partials/header') %>
+<nav aria-label="breadcrumb">
+  <ol class="breadcrumb">
+    <li class="breadcrumb-item " aria-current="page">Home</li>
+    <li class="breadcrumb-item active" aria-current="page">Meal Planner</li>
+  </ol>
+</nav>
+<div class="container" style="padding-top: 30px;
+    padding-bottom: 60px;
+    margin-bottom: 60px;">
+  <div class="row container">
+      <div class="col-md-6">
+        <h2>Trying To Plan a Meal ??</h2>
+        <h2>We will help you</h2>
+          <img src="./meal.png" width="300" height="300" class="d-inline-block align-top" alt="">
+      </div>
+      <div class="col-md-6">
+        <form class="" action="/meal-planner" method="post">
+          <div class="form-group">
+            <h4><label for="calorie">Choose Calories</label></h4>
+            <select name="targetCalories" class="form-control" id="calorieid">
+              <option>2000</option>
+              <option>1000</option>
+              <option>2500</option>
+              <option>3000</option>
+              <option>5000</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <h4><label for="diet">Choose A Diet</label></h4>
+            <select name="diet" class="form-control" id="dietid">
+              <option>Vegetarian</option>
+              <option>Gluten Free</option>
+              <option>Ketogenic</option>
+              <option>Vegan</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <h4><label for="timeframe">Choose A Time Frame</label></h4>
+            <select name="timeFrame" class="form-control" id="timeframeid">
+              <option>day</option>
+              <option>week</option>
+
+            </select>
+          </div>
+          <button type="submit" class="btn btn-primary">Submit</button>
+        </form>
+      </div>
+  </div>
+</div>
+
+<%- include('../partials/footer') %>

@@ -1,0 +1,102 @@
+<%- include('../partials/header') %>
+<nav aria-label="breadcrumb">
+  <ol class="breadcrumb">
+    <li class="breadcrumb-item " aria-current="page">Home</li>
+    <li class="breadcrumb-item active" aria-current="page">Dishes</li>
+  </ol>
+</nav>
+<div class="container" style="padding-top: 30px;
+    padding-bottom: 60px;
+    margin-bottom: 60px;">
+  <div class="row container">
+      <div class="col-md-6">
+        <h2>Confused What to Eat today ??</h2>
+        <h2>We will help you out</h2>
+
+          <img src="./dish.png" width="400" height="400" class="d-inline-block align-top" alt="">
+      </div>
+      <div class="col-md-6">
+        <form class="" action="/dishes" method="post">
+          <div class="form-group">
+            <h4><label for="type">Meal Type</label></h4>
+            <select name="type" class="form-control">
+              <option>main course</option>
+              <option>side dish</option>
+              <option>dessert</option>
+              <option>appetizer</option>
+              <option>salad</option>
+              <option>bread</option>
+              <option>breakfast</option>
+              <option>soup</option>
+              <option>beverage</option>
+              <option>sauce</option>
+              <option>marinade</option>
+              <option>fingerfood</option>
+              <option>snack</option>
+              <option>drink</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <h4><label for="cuisine">Choose A Cuisine</label></h4>
+            <select name="cuisine" class="form-control" id="cuisineid">
+              <option>Indian</option>
+              <option>American</option>
+              <option>British</option>
+              <option>Cajun</option>
+              <option>Caribbean</option>
+              <option>Chinese</option>
+              <option>Eastern European</option>
+              <option>European</option>
+              <option>French</option>
+              <option>German</option>
+              <option>Greek</option>
+              <option>Irish</option>
+              <option>Italian</option>
+              <option>Japanese</option>
+              <option>Jewish</option>
+              <option>Korean</option>
+              <option>Latin American</option>
+              <option>Mediterranean</option>
+              <option>Mexican</option>
+              <option>Middle Eastern</option>
+              <option>Nordic</option>
+              <option>Southern</option>
+              <option>Spanish</option>
+              <option>Thai</option>
+              <option>Vietnamese</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <h4><label for="diet">Choose A Diet</label></h4>
+            <select name="diet" class="form-control" id="dietid">
+              <option>Vegetarian</option>
+              <option>Gluten Free</option>
+              <option>Ketogenic</option>
+              <option>Vegan</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <h4><label for="intolerance">Choose A Intolerance</label></h4>
+            <select name="intolerance" class="form-control" id="intoleranceid">
+              <option>None</option>
+              <option>Dairy</option>
+              <option>Egg</option>
+              <option>Gluten</option>
+              <option>Grain</option>
+              <option>Peanut</option>
+              <option>Seafood</option>
+              <option>Sesame</option>
+              <option>Shellfish</option>
+              <option>Soy</option>
+              <option>Sulfite</option>
+              <option>Tree Nut</option>
+              <option>Wheat</option>
+            </select>
+          </div>
+          <button type="submit" class="btn btn-primary">Submit</button>
+        </form>
+      </div>
+  </div>
+</div>
+
+<%- include('../partials/footer') %>

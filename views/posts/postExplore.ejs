@@ -1,0 +1,52 @@
+<%- include('../partials/header') %>
+<nav aria-label="breadcrumb">
+  <ol class="breadcrumb">
+    <li class="breadcrumb-item " aria-current="page">Home</li>
+    <li class="breadcrumb-item active" aria-current="page">Explore Post</li>
+  </ol>
+</nav>
+<div class="container">
+  <div class="row justify-content-center">
+
+  <div class="col">
+    <div class="card mb-3 text-center" style="width: 100%">
+      <div class="card-body">
+          <h2 class="card-header"><%=post.title%></h2>
+          <h3 class="card-text"><%= post.description %></h3>
+          <p class="card-text"><small class="text-muted"><em>Submitted by: <%= post.author.username %>, <%= moment(post.createdAt).fromNow() %></em></small></p>
+      </div>
+    </div>
+
+    <div class="well">
+      <div class="text-right">
+        <a class="btn btn-success" href="/posts/<%= post._id %>/comments/new">Add New Comment</a>
+      </div>
+      <hr>
+      <% post.comments.forEach(function(comment){ %>
+      <div class="row container">
+        <div class="col-md-10">
+          <div>
+            <strong><%= comment.author.username %></strong>
+           <%= comment.text %>
+          </div>
+            <small><span class="pull-right"><%= moment(comment.createdAt).fromNow() %></span></small>
+            <hr>
+        </div>
+          <% if(currentUser && comment.author.id.equals(currentUser._id)){ %>
+             <div class="col-md-1">
+               <a href="/posts/<%=post._id%>/comments/<%=comment._id%>/edit" class="btn btn-xs btn-warning">EDIT</a>
+             </div>
+             <div class="col-md-1">
+               <form class="delete-form" action="/posts/<%=post._id%>/comments/<%=comment._id%>?_method=DELETE" method="POST">
+                 <button class="btn btn-xs btn-danger">DELETE</button>
+               </form>
+             </div>
+         <% } %>
+          <hr>
+    </div>
+    <% }) %>
+  </div>
+</div>
+</div>
+</div>
+<%- include('../partials/footer') %>

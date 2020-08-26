@@ -1,0 +1,25 @@
+<%- include('../partials/header') %>
+<nav aria-label="breadcrumb">
+  <ol class="breadcrumb">
+    <li class="breadcrumb-item " aria-current="page">Home</li>
+    <li class="breadcrumb-item active" aria-current="page">Create Post</li>
+  </ol>
+</nav>
+<div class="container">
+  <form action="/create-post" method="post">
+    <div class="form-group">
+    <label for="exampleFormControlFile1"> Image url</label>
+    <input type="text" class="form-control-file" id="exampleFormControlFile1" name="url">
+  </div>
+    <div class="form-group">
+      <label for="InputEmail1">Title</label>
+      <input type="text" class="form-control" id="InputEmail1" aria-describedby="emailHelp" placeholder="Enter Title" name="title">
+    </div>
+    <div class="form-group">
+      <label for="InputPassword1">Description</label>
+      <textarea name="description" rows="8" cols="80" placeholder="Description"></textarea>
+    </div>
+    <button type="submit" class="btn btn-primary">Submit</button>
+  </form>
+</div>
+<%- include('../partials/footer') %>

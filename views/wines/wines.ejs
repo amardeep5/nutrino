@@ -1,0 +1,43 @@
+<%- include('../partials/header') %>
+<nav aria-label="breadcrumb">
+  <ol class="breadcrumb">
+    <li class="breadcrumb-item " aria-current="page">Home</li>
+    <li class="breadcrumb-item active" aria-current="page">wines</li>
+
+  </ol>
+</nav>
+<div class="container">
+  <div class="row">
+    <div class="col-md-6">
+      <h2>Confused Which Wine to drink today ??</h2>
+      <h2>we will recommend you some of the best</h2>
+        <img src="./wine.png" width="400" height="400" class="d-inline-block align-top" alt="">
+    </div>
+    <div class="col-md-6">
+      <form  action="/wines" method="post">
+        <div class="form-group ">
+          <h4><label for="input">Wine</label></h4>
+          <input name="wine" type="text" class="form-control" id="inputWine">
+        </div>
+        <div class="form-group ">
+          <h4><label for="inputRating">Rating</label></h4>
+          <select name="maxRating" id="inputRating" class="form-control">
+            <option selected>0.5</option>
+            <option>0.75</option>
+            <option>1</option>
+          </select>
+        </div>
+        <div class="form-group ">
+          <h4><label for="inputPrice">Price in Dollar</label></h4>
+          <input name="minPrice" type="text" class="form-control" id="inputPrice">
+        </div>
+        <button type="submit" class="btn btn-primary">Search</button>
+       </form>
+      </div>
+
+    </div>
+
+  </div>
+
+</div>
+<%- include('../partials/footer') %>

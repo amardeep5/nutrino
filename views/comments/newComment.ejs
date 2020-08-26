@@ -1,0 +1,24 @@
+<%- include('../partials/header') %>
+<nav aria-label="breadcrumb">
+  <ol class="breadcrumb">
+    <li class="breadcrumb-item " aria-current="page">Home</li>
+    <li class="breadcrumb-item active" aria-current="page">Post</li>
+    <li class="breadcrumb-item active" aria-current="page">Add Comment</li>
+  </ol>
+</nav>
+
+    <div class="row container">
+        <h1 style="text-align: center">Add New Comment </h1>
+        <div style="width: 30%; margin: 25px auto;">
+
+            <form action="/comments/post/<%=post._id%>" method="post">
+              <div class="form-group">
+                <label for="InputPassword1">Comment</label>
+                <input type="text" class="form-control" id="InputPassword1" placeholder="Comment" name="comment">
+              </div>
+              <button type="submit" class="btn btn-primary">Submit</button>
+            </form>
+            <a href="/all-posts">Go Back</a>
+        </div>
+    </div>
+<%- include('../partials/footer') %>

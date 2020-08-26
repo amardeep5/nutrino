@@ -1,0 +1,58 @@
+<%- include('partials/header') %>
+<nav aria-label="breadcrumb">
+  <ol class="breadcrumb">
+    <li class="breadcrumb-item " aria-current="page">Home</li>
+    <li class="breadcrumb-item active" aria-current="page">My Account</li>
+  </ol>
+</nav>
+<div class="container">
+  <div class="row justify-content-center container" style="margin-top: 30px; margin-bottom: 30px;">
+    <h3>Hi <%=currentUser.username%></h3>
+  </div>
+
+  <div class="container">
+    <div class="row justify-content-center container" style="margin-top: 30px; margin-bottom: 30px;">
+      <h5>Your Meal Plans</h5>
+    </div>
+  </div>
+  <div class="row " style="margin-top: 30px; margin-bottom: 30px;">
+
+    <%result.meals.forEach((meal)=>{%>
+      <div class="col-md-3">
+        <div class="card text-center bg-success text-white" style="width: 18rem;">
+          <div class="card-body">
+            <h5 class="card-title">Meal Plan</h5>
+            <h6 class="card-subtitle mb-2 text-white"> Diet - <%=meal.diet%></h6>
+            <h6 class="card-subtitle mb-2 text-white">Calories - <%=meal.targetCalories%></h6>
+            <h6 class="card-subtitle mb-2 text-white">Time - <%=meal.timeFrame%></h6>
+          </div>
+          <div  class="card-footer text-muted">
+            <span class="text-white"> <%= moment(meal.createdAt).fromNow() %></span>
+          </div >
+        </div>
+      </div>
+    <%})%>
+  </div>
+  <div class="container">
+    <div class="row justify-content-center container" style="margin-top: 30px; margin-bottom: 30px;">
+      <h5>Your Liked dishes</h5>
+    </div>
+    </div>
+  <div class="row" style="margin-top: 30px; margin-bottom: 30px;">
+
+    <%result.favourites.forEach((favourite)=>{%>
+      <div class="col-md-3">
+        <div class="card text-center bg-danger text-white" style="width: 18rem;">
+          <div class="card-body">
+            <h5 class="card-title">Favourite</h5>
+            <h6 class="card-subtitle mb-2 text-white">Name - <%=favourite.title%></h6>
+          </div>
+          <div  class="card-footer text-muted">
+            <span class="text-white"> <%= moment(favourite.createdAt).fromNow() %></span>
+          </div >
+        </div>
+      </div>
+    <%})%>
+  </div>
+</div>
+<%- include('partials/footer') %>

@@ -1,0 +1,52 @@
+<%- include('../partials/header') %>
+
+
+<nav aria-label="breadcrumb">
+  <ol class="breadcrumb">
+    <li class="breadcrumb-item " aria-current="page">Home</li>
+    <li class="breadcrumb-item " aria-current="page">Dishes</li>
+    <li class="breadcrumb-item " aria-current="page">Results</li>
+
+    <li class="breadcrumb-item active" aria-current="page">Recipe</li>
+  </ol>
+</nav>
+<div class="container">
+  <h2 class="text-center">Ingredients</h2>
+  <table class="table table-bordered table-sm">
+    <thead>
+      <tr>
+        <th scope="col" class="text-center">Amount</th>
+        <th scope="col" class="text-center">Name</th>
+      </tr>
+    </thead>
+    <tbody>
+    <% ingredients.forEach(function(ing){ %>
+        <tr>
+          <td class="text-center"><%=ing.amount.metric.value%> <%=ing.amount.metric.unit%></td>
+          <td class="text-center"><%=ing.name%></td>
+        </tr>
+      <%})%>
+    </tbody>
+  </table>
+
+
+
+  <h2 class="text-center">Recipe</h2>
+
+  <table class="table table-bordered table-sm">
+    <thead>
+      <tr>
+        <th scope="col" class="text-center">Steps</th>
+      </tr>
+    </thead>
+    <tbody>
+    <% recipes.forEach(function(rec){ %>
+        <tr>
+          <td class="text-center"><%=rec.step%></td>
+        </tr>
+    <%})%>
+
+    </tbody>
+
+
+</div>
