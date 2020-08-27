@@ -22,6 +22,7 @@ const passport = require("passport")
 const localStrategy = require('passport-local');
 var expressSession =require("express-session")
 const api_key=process.env.API_KEY
+const secret=process.env.SECRET
 const mongoPassword=process.env.MONGO_PASSWORD
 var MongoStore = require('connect-mongo')(expressSession);
 app.set("view engine","ejs");
@@ -103,7 +104,7 @@ io.on('connection', socket => {
 //passport
 
 app.use(expressSession({
-  secret : "jai babe di",
+  secret :`${secret}`,
   resave : false,
   saveUninitialized: false,
   store: new MongoStore({ mongooseConnection: mongoose.connection })
@@ -406,25 +407,72 @@ app.post("/comments/post/:id",isLoggedIn,async (req,res)=>{
 
 })
 
+app.get("/post/:id/edit",isLoggedIn,async (req,res)=>{
+  const post = await Post.findById(req.params.id)
+  res.render("posts/edit",{post})
+})
+
+app.post("/post/:id/edit",isLoggedIn,async (req,res)=>{
+  var {url,title,description}=req.body
+  const getpost=await Post.findById(req.params.id)
+  getpost.title=title
+  getpost.url=url
+  getpost.description=description
+  getpost.save(err=>{
+    if(err){
+      console.log(err);
+      return
+    }
+  })
+  res.redirect(`/post/${req.params.id}`)
+
+})
+
+app.post("/post/:id/delete",isLoggedIn, (req, res) => {
+  //findByIdAndRemove
+  Post.findByIdAndRemove(req.params.id, err => {
+    if (err) { console.log(err); }
+    else {
+        res.redirect("/all-posts");
+    }
+  });
+});
+
 
 //******************************************************
 //misc routes
 app.get("/chat",isLoggedIn,(req,res)=>{
-  res.render("chat")
+
+  res.render("chat",{trainer:req.body.trainer})
 })
-app.get("/buy/:id/:un",async (req,res)=>{
+app.get("/buy/:id/:un",isLoggedIn,async (req,res)=>{
   const resp=await axios.get(`https://api.spoonacular.com/recipes/${req.params.id}/priceBreakdownWidget.json?apiKey=${api_key}`)
   res.render("buy",{price:resp.data.totalCost,un:req.params.un})
 })
 
-app.post("/buy/confirmation",(req,res)=>{
+app.post("/buy/confirmation",isLoggedIn,(req,res)=>{
   var {username,email}=req.body;
   res.send(`Congratulation ${username} you have succesfully purchased the item`)
   //setTimeout(function () {
     res.redirect("/")
   //}, 3);
 })
+app.post("/my-account/meal-plan/:id",isLoggedIn,async (req,res)=>{
+  const plan = await Planner.findById(req.params.id)
+  let resp=await axios.get("https://api.spoonacular.com/mealplanner/generate?apiKey="+api_key+"&diet="+plan.diet+"&targetCalories="+plan.targetCalories+"&timeFrame="+plan.timeFrame)
+  let meals=resp.data
+  res.render("meals/my_planner",{meals})
+})
 
+app.post("/my-account/:id/delete",isLoggedIn, (req, res) => {
+  //findByIdAndRemove
+  Planner.findByIdAndRemove(req.params.id, err => {
+    if (err) { console.log(err); }
+    else {
+        res.redirect("/my-account");
+    }
+  });
+});
 //*************************************************
 
 server.listen(3000,(req,res)=>{

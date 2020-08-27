@@ -1,8 +1,9 @@
 <%- include('partials/header') %>
 <nav aria-label="breadcrumb">
   <ol class="breadcrumb">
-    <li class="breadcrumb-item " aria-current="page">Home</li>
-    <li class="breadcrumb-item active" aria-current="page">Chat</li>
+    <li class="breadcrumb-item " aria-current="page"><a href="/">Home</a></li>
+    <li class="breadcrumb-item" aria-current="page"><a href="/explore-nutritionist">Trainers</a></li>
+    <li class="breadcrumb-item active" aria-current="page">Chat with <%=trainer%></li>
   </ol>
 </nav>
 <div class="container">
@@ -15,13 +16,10 @@
     <div class="form-group">
       <label for="InputPassword1">Select Trainer</label>
       <select name="room" class="form-control" id="trainerid">
-        <option>eela</option>
-        <option>zoya</option>
-        <option>zoma</option>
-
+        <option><%=trainer%></option>
       </select>
     </div>
-    <button type="submit" class="btn btn-primary">Submit</button>
+    <button type="submit" class="btn btn-primary">Confirm</button>
   </form>
 </div>
 <%- include('partials/footer') %>

@@ -1,0 +1,17 @@
+<%- include('../partials/header') %>
+<nav aria-label="breadcrumb">
+  <ol class="breadcrumb">
+    <li class="breadcrumb-item " aria-current="page"><a href="/">Home</a></li>
+    <li class="breadcrumb-item " aria-current="page"><a href="/all-posts">Posts</a></li>
+    <li class="breadcrumb-item active" aria-current="page">Post Edit</li>
+  </ol>
+</nav>
+<div class="container justify-content-center">
+  <form class="" action="/post/<%=post.id%>/edit" method="post">
+    <input type="text" name="url" value="<%=post.url%>">
+    <input type="text" name="title" value="<%=post.title%>">
+    <textarea name="description" rows="8" cols="80" value="<%=post.description%>"></textarea>
+    <button type="submit" class="btn btn-warning">Edit</button>
+  </form>
+</div>
+<%- include('../partials/footer') %>

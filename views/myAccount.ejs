@@ -1,7 +1,7 @@
 <%- include('partials/header') %>
 <nav aria-label="breadcrumb">
   <ol class="breadcrumb">
-    <li class="breadcrumb-item " aria-current="page">Home</li>
+    <li class="breadcrumb-item active" aria-current="page"><a href="/">Chat</a></li>
     <li class="breadcrumb-item active" aria-current="page">My Account</li>
   </ol>
 </nav>
@@ -18,7 +18,7 @@
   <div class="row " style="margin-top: 30px; margin-bottom: 30px;">
 
     <%result.meals.forEach((meal)=>{%>
-      <div class="col-md-3">
+      <div class="col-md-4">
         <div class="card text-center bg-success text-white" style="width: 18rem;">
           <div class="card-body">
             <h5 class="card-title">Meal Plan</h5>
@@ -28,6 +28,14 @@
           </div>
           <div  class="card-footer text-muted">
             <span class="text-white"> <%= moment(meal.createdAt).fromNow() %></span>
+            <hr>
+            <form class="" action="/my-account/meal-plan/<%=meal._id%>" method="post">
+              <button type="submit" class="btn btn-primary">visit</button>
+            </form>
+            <hr>
+            <form class="delete-form" action="/my-account/<%=meal._id%>/delete?_method=DELETE" method="POST">
+              <button class="btn btn-xs btn-danger">DELETE</button>
+            </form>
           </div >
         </div>
       </div>
@@ -41,8 +49,8 @@
   <div class="row" style="margin-top: 30px; margin-bottom: 30px;">
 
     <%result.favourites.forEach((favourite)=>{%>
-      <div class="col-md-3">
-        <div class="card text-center bg-danger text-white" style="width: 18rem;">
+      <div class="col-md-4">
+        <div class="card text-center bg-warning text-white" style="width: 18rem;">
           <div class="card-body">
             <h5 class="card-title">Favourite</h5>
             <h6 class="card-subtitle mb-2 text-white">Name - <%=favourite.title%></h6>

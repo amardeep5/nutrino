@@ -1,9 +1,10 @@
 <%- include('../partials/header') %>
 <nav aria-label="breadcrumb">
   <ol class="breadcrumb">
-    <li class="breadcrumb-item " aria-current="page">Home</li>
-    <li class="breadcrumb-item active" aria-current="page">Post</li>
-    <li class="breadcrumb-item active" aria-current="page">Comment Edit</li>
+    <li class="breadcrumb-item " aria-current="page"><a href="/">Home</a></li>
+    <li class="breadcrumb-item active" aria-current="page"><a href="/all-posts">Posts</a></li>
+    <li class="breadcrumb-item " aria-current="page"><a href="/post/<%=post._id%>">Post <%=post.title%></a></li>
+    <li class="breadcrumb-item active" aria-current="page">Edit Comment</li>
   </ol>
 </nav>
 <div class="container justify-content-center">
