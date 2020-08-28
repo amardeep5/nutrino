@@ -1,0 +1,29 @@
+<%- include('partials/header') %>
+<nav aria-label="breadcrumb">
+  <ol class="breadcrumb">
+    <li class="breadcrumb-item " aria-current="page"><a href="/">Home</a></li>
+    <li class="breadcrumb-item " aria-current="page"><a href="/grocery-product">Grocery</a></li>
+    <li class="breadcrumb-item active" aria-current="page">Results</li>
+  </ol>
+</nav>
+<div class="container">
+  <div class="row justify-content-center">
+    <div class=" card border-primary h-100 d-inline-block text-center" >
+
+      <div class="card-body d-flex flex-column">
+        <h5 class="card-title"><%=info.title%></h5>
+      </div>
+      <div class="card-footer">
+        <h5><%=info.ingredientList%></h5>
+        <hr>
+        <h4>$ <%=info.price%></h4>
+        <hr>
+        <form class="" action="/cart/grocery/<%=info.id%>/<%=info.title%>" method="post">
+          <input type="text" name="price" value="<%=info.price%>" style="display:none">
+          <button type="submit" class="btn btn-success btn-lg">Add to Cart</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+<%- include('partials/footer') %>

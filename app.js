@@ -149,10 +149,20 @@ app.post("/dishes",async (req,res)=>{
   type=type.toLowerCase();
   diet=diet.toLowerCase();
   intolerance=intolerance.toLowerCase()
-   if(intolerance==="none"){
-      let resp=await axios.get("https://api.spoonacular.com/recipes/complexSearch?apiKey="+api_key+"&type="+type+"&cuisine="+cuisine+"&diet="+diet+"&number=9")
+   if(intolerance==="none" && diet==="none"){
+      let resp=await axios.get("https://api.spoonacular.com/recipes/complexSearch?apiKey="+api_key+"&type="+type+"&cuisine="+cuisine+"&number=9")
        dishes=resp.data.results
          res.render("dishes/displaydish",{dishes})
+      }
+      else if(intolerance==="none"){
+        let resp=await axios.get("https://api.spoonacular.com/recipes/complexSearch?apiKey="+api_key+"&type="+type+"&cuisine="+cuisine+"&diet="+diet+"&intolerances="+intolerance+"&number=9")
+         dishes=resp.data.results
+           res.render("dishes/displaydish",{dishes})
+      }
+      else if(diet==="none"){
+        let resp=await axios.get("https://api.spoonacular.com/recipes/complexSearch?apiKey="+api_key+"&type="+type+"&cuisine="+cuisine+"&intolerances="+intolerance+"&number=9")
+         dishes=resp.data.results
+           res.render("dishes/displaydish",{dishes})
       }
       else{
         let resp=await axios.get("https://api.spoonacular.com/recipes/complexSearch?apiKey="+api_key+"&type="+type+"&cuisine="+cuisine+"&diet="+diet+"&intolerances="+intolerance+"&number=9")
@@ -452,11 +462,36 @@ app.get("/buy/:id/:un",isLoggedIn,async (req,res)=>{
 
 app.post("/buy/confirmation",isLoggedIn,(req,res)=>{
   var {username,email}=req.body;
-  res.send(`Congratulation ${username} you have succesfully purchased the item`)
-  //setTimeout(function () {
-    res.redirect("/")
-  //}, 3);
+  res.render("confirmation")
 })
+
+app.post("/cart/:id/:un",isLoggedIn,async (req,res)=>{
+  const resp=await axios.get(`https://api.spoonacular.com/recipes/${req.params.id}/priceBreakdownWidget.json?apiKey=${api_key}`)
+  req.user.cart.push({price:resp.data.totalCost,name:req.params.un})
+  req.user.save()
+  res.redirect(`/dish/${req.params.id}/recipe/`)
+})
+
+app.get("/cart",(req,res)=>{
+  const items = req.user.cart;
+  var total=0;
+  if(items.length===0){
+    res.send("Cart Is Empty")
+  }else{
+    items.forEach(item=>{
+      total+=Number(item.price)})
+    res.render("cart",{items,total})
+  }
+})
+
+app.post("/cart/buy",(req,res)=>{
+  req.user.cart.length=0;
+  req.user.save();
+  res.render("confirmation")
+
+
+})
+
 app.post("/my-account/meal-plan/:id",isLoggedIn,async (req,res)=>{
   const plan = await Planner.findById(req.params.id)
   let resp=await axios.get("https://api.spoonacular.com/mealplanner/generate?apiKey="+api_key+"&diet="+plan.diet+"&targetCalories="+plan.targetCalories+"&timeFrame="+plan.timeFrame)
@@ -473,6 +508,36 @@ app.post("/my-account/:id/delete",isLoggedIn, (req, res) => {
     }
   });
 });
+app.post("/cart/item/:i/delete",isLoggedIn, (req, res) => {
+  //findByIdAndRemove
+  console.log(req.user.cart);
+  req.user.cart.splice(Number(req.params.i), 1);
+  req.user.save()
+  res.redirect("/cart")
+});
+//*************************************************
+//grocery product
+
+app.get("/grocery-product",(req,res)=>{
+  const products=[];
+  res.render("products/grocery",{products});
+})
+
+app.post("/grocery-product",async (req,res)=>{
+  var name = req.body.name;
+  const pro=await axios.get(`https://api.spoonacular.com/food/products/search?apiKey=${api_key}&query=${name}&number=2`)
+  res.render("products/grocery",{products:pro.data.products})
+})
+app.get("/grocery-product/:id",async (req,res)=>{
+  const info = await axios.get(`https://api.spoonacular.com/food/products/${req.params.id}?apiKey=${api_key}`)
+  res.render("products/grocerydisplay",{info:info.data})
+})
+
+app.post("/cart/grocery/:id/:un",isLoggedIn,async (req,res)=>{
+  req.user.cart.push({price:req.body.price,name:req.params.un})
+  req.user.save()
+  res.redirect(`/grocery-product/${req.params.id}`)
+})
 //*************************************************
 
 server.listen(3000,(req,res)=>{

@@ -7,7 +7,9 @@
   </ol>
 </nav>
 <div class="container">
+
   <div class="row text-center" >
+
              <% dishes.forEach(function(dish){ %>
                <div class="col-md-4 col-sm-6" style="margin-bottom: 40px;margin-top: 40px;">
                   <div class=" card border-primary h-100 d-inline-block" >
@@ -18,12 +20,17 @@
                             <i class="far fa-heart fa-lg"></i>
                         </button>
                       </form>
+                      <hr>
                       <h5 class="card-title"><%=dish.title%></h5>
                       <a href="/dish/<%=dish.id%>/recipe" class="btn btn-primary mt-auto" >Explore</a>
                     </div>
                     <div class="card-footer">
                       <form class="" action="/buy/<%=dish.id%>/<%=dish.title%>" method="get">
-                        <button type="submit" class="btn btn-info btn-lg">Buy</button>
+                        <button type="submit" class="btn btn-info btn-lg">Buy Now</button>
+                      </form>
+                      <hr>
+                      <form class="" action="/cart/<%=dish.id%>/<%=dish.title%>" method="post">
+                        <button type="submit" class="btn btn-success btn-lg">Add to Cart</button>
                       </form>
                     </div>
                   </div>

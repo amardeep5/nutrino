@@ -18,6 +18,12 @@ var UserSchema = new mongoose.Schema({
 
       }
     ],
+    cart: [
+      {
+         price:String,
+         name:String
+      }
+   ],
     isNutritionist:{type:Boolean,default:false}
 });
 UserSchema.plugin(passportLocalMongoose)
