@@ -1,7 +1,7 @@
 <%- include('partials/header') %>
 <nav aria-label="breadcrumb">
   <ol class="breadcrumb">
-    <li class="breadcrumb-item active" aria-current="page"><a href="/">Chat</a></li>
+    <li class="breadcrumb-item active" aria-current="page"><a href="/">Home</a></li>
     <li class="breadcrumb-item active" aria-current="page">My Account</li>
   </ol>
 </nav>
@@ -57,6 +57,10 @@
           </div>
           <div  class="card-footer text-muted">
             <span class="text-white"> <%= moment(favourite.createdAt).fromNow() %></span>
+            <hr>
+            <form class="delete-form" action="/my-account/fav/<%=favourite._id%>/delete?_method=DELETE" method="POST">
+              <button class="btn btn-xs btn-danger">DELETE</button>
+            </form>
           </div >
         </div>
       </div>

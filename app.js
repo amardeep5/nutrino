@@ -18,6 +18,7 @@ const Post = require("./models/post")
 const Comment = require("./models/comment")
 const Planner = require("./models/planner")
 const Favourite = require("./models/favourite")
+const flash = require("connect-flash")
 const passport = require("passport")
 const localStrategy = require('passport-local');
 var expressSession =require("express-session")
@@ -26,6 +27,7 @@ const secret=process.env.SECRET
 const mongoPassword=process.env.MONGO_PASSWORD
 var MongoStore = require('connect-mongo')(expressSession);
 app.set("view engine","ejs");
+app.use(flash())
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(express.static(__dirname + "/public"));
 app.locals.moment = require('moment');
@@ -44,7 +46,6 @@ const isLoggedIn=(req,res,next)=>{
   }
   res.redirect("/login")
 }
-
 
 
 //*******************************************************
@@ -113,6 +114,8 @@ app.use(passport.initialize())
 app.use(passport.session())
 app.use((req,res,next)=>{
   res.locals.currentUser=req.user;
+  res.locals.error=req.flash("error")
+  res.locals.success=req.flash("success")
   next();
 })
 passport.use(new localStrategy(User.authenticate()))
@@ -150,7 +153,7 @@ app.post("/dishes",async (req,res)=>{
   diet=diet.toLowerCase();
   intolerance=intolerance.toLowerCase()
    if(intolerance==="none" && diet==="none"){
-      let resp=await axios.get("https://api.spoonacular.com/recipes/complexSearch?apiKey="+api_key+"&type="+type+"&cuisine="+cuisine+"&number=9")
+      let resp=await axios.get("https://api.spoonacular.com/recipes/complexSearch?apiKey="+api_key+"&type="+type+"&cuisine="+cuisine)//+"&number=9")
        dishes=resp.data.results
          res.render("dishes/displaydish",{dishes})
       }
@@ -171,22 +174,27 @@ app.post("/dishes",async (req,res)=>{
       }
 
 })
-
+app.get("/dish/:id/fav",async (req,res)=>{
+   res.render("dishes/displaydish",{dishes})
+})
 app.post("/dish/:id/fav",async (req,res)=>{
+
   var resp=await axios.get(`https://api.spoonacular.com/recipes/${req.params.id}/summary?apiKey=${api_key}`)
   const favdish=resp.data
   var newFav= await new Favourite(favdish)
   newFav.save(function (err) {
+    req.flash("error","Some Error Occured")
     if (err) return handleError(err);
     // saved!
   });
 
   req.user.favourites.push(newFav)
   req.user.save(function (err) {
-    if (err) return handleError(err);
-    // saved!
+    if (err) return handleError(err);    // saved!
   });
-  res.render("dishes/displaydish",{dishes})
+  req.flash("success","You have Liked the Dish")
+  res.redirect(`/dish/${req.params.id}/fav`)
+
 })
 
 
@@ -226,6 +234,7 @@ app.post("/meal-planner",isLoggedIn, async (req,res)=>{
 //console.log(newPlan)
     newPlan.save(function (err) {
     if (err){
+      req.flash("error","Some Error Occured")
       console.log(err)
       return;
     }
@@ -238,6 +247,7 @@ app.post("/meal-planner",isLoggedIn, async (req,res)=>{
     });
     let resp=await axios.get("https://api.spoonacular.com/mealplanner/generate?apiKey="+api_key+"&diet="+diet+"&targetCalories="+targetCalories+"&timeFrame="+timeFrame)
     let meals=resp.data
+    req.flash("success","Successfully Created Your Meal")
     res.render("meals/displayplanner",{meals})
 
 })
@@ -253,6 +263,7 @@ app.get("/become-nutritionist",isLoggedIn,(req,res)=>{
  if(req.user.isNutritionist){
      res.render("become");
  }else{
+   req.flash("error","You must be registered as a Nutritionist")
    res.redirect("/");
  }
 })
@@ -274,6 +285,7 @@ app.get("/login",(req,res)=>{
 
 app.get("/logout",(req,res)=>{
   req.logout();
+  req.flash("error","You Are Logged Out")
   res.redirect("/")
 })
 
@@ -287,9 +299,11 @@ app.post('/signup',  (req, res) => {
   User.register(newUser,req.body.password,(err,user)=>{
     if(err){
       console.log(err)
+      req.flash("error","Some Error Occured")
       return res.render("auth/signup")
     }
     passport.authenticate("local")(req,res,()=>{
+      req.flash("success","Successfully Signed Up")
       res.redirect("/")
     })
   })
@@ -307,6 +321,7 @@ app.get("/create-post",isLoggedIn,(req,res)=>{
 app.get("/all-posts",isLoggedIn,async (req,res)=>{
   Post.find({}).sort({createdAt:-1}).exec((err,posts)=>{
     if(err){
+      req.flash("error","Some Error Occured")
       console.log(err);
     }else{
       res.render("posts/allPosts",{posts})
@@ -320,6 +335,7 @@ app.get("/post/:id",isLoggedIn,async (req,res)=>{
 //  var post= await Post.findById(req.params.id).populate("comments")
   Post.findById(req.params.id).populate("comments").exec((err,post)=>{
     if(err){
+      req.flash("error","Some Error Occured")
       console.log(err)
     }else{
       res.render("posts/postExplore",{post})
@@ -345,9 +361,11 @@ app.post("/posts/:id/comments/:Cid/edit",isLoggedIn,async (req,res)=>{
     comm.text=req.body.comment
     comm.save(err=>{
       if (err){
+        req.flash("error","Some Error Occured")
         console.log(err)
         return;}
     })
+    req.flash("success","Successfully Edited the Comment")
      res.redirect("/post/" + req.params.id)
   });
 
@@ -357,6 +375,7 @@ app.post("/posts/:id/comments/:Cid",isLoggedIn, (req, res) => {
   Comment.findByIdAndRemove(req.params.Cid, err => {
     if (err) { console.log(err); }
     else {
+        req.flash("success","Successfully Deleted the Comment")
         res.redirect("/post/" + req.params.id);
     }
   });
@@ -370,6 +389,7 @@ app.post("/create-post",isLoggedIn,(req,res)=>{
       console.log(err)
       return;}
   })
+    req.flash("success","Successfully Created the Post")
   res.redirect("/all-posts");
 
 })
@@ -383,6 +403,7 @@ app.post("/post/:id/like",isLoggedIn,async (req,res)=>{
   post.like=post.like+Number(1)
   post.save(err=>{
     if (err){
+        req.flash("error","Some Error Occured")
       console.log(err)
       return;}
   })
@@ -398,6 +419,7 @@ app.post("/post/:id/like",isLoggedIn,async (req,res)=>{
        console.log(err)
        return;}
    })
+     req.flash("success","You Liked the Post")
   res.redirect("/all-posts")
 })
 
@@ -413,6 +435,7 @@ app.post("/comments/post/:id",isLoggedIn,async (req,res)=>{
   var post= await Post.findById(req.params.id)
   post.comments.push(newComm)
   post.save()
+    req.flash("success","Your Comment has been Added")
   res.redirect(`/post/${post._id}`);
 
 })
@@ -434,6 +457,7 @@ app.post("/post/:id/edit",isLoggedIn,async (req,res)=>{
       return
     }
   })
+    req.flash("success","Successfully Edited the Post")
   res.redirect(`/post/${req.params.id}`)
 
 })
@@ -443,6 +467,7 @@ app.post("/post/:id/delete",isLoggedIn, (req, res) => {
   Post.findByIdAndRemove(req.params.id, err => {
     if (err) { console.log(err); }
     else {
+        req.flash("success","Successfully deleted the Post")
         res.redirect("/all-posts");
     }
   });
@@ -469,6 +494,7 @@ app.post("/cart/:id/:un",isLoggedIn,async (req,res)=>{
   const resp=await axios.get(`https://api.spoonacular.com/recipes/${req.params.id}/priceBreakdownWidget.json?apiKey=${api_key}`)
   req.user.cart.push({price:resp.data.totalCost,name:req.params.un})
   req.user.save()
+    req.flash("success","Successfully Added to the cart")
   res.redirect(`/dish/${req.params.id}/recipe/`)
 })
 
@@ -476,7 +502,8 @@ app.get("/cart",(req,res)=>{
   const items = req.user.cart;
   var total=0;
   if(items.length===0){
-    res.send("Cart Is Empty")
+      req.flash("error","Cart is empty")
+    res.redirect("/")
   }else{
     items.forEach(item=>{
       total+=Number(item.price)})
@@ -485,8 +512,8 @@ app.get("/cart",(req,res)=>{
 })
 
 app.post("/cart/buy",(req,res)=>{
-  req.user.cart.length=0;
-  req.user.save();
+    req.user.cart.splice(0,req.user.cart.length);
+    req.user.save();
   res.render("confirmation")
 
 
@@ -504,15 +531,29 @@ app.post("/my-account/:id/delete",isLoggedIn, (req, res) => {
   Planner.findByIdAndRemove(req.params.id, err => {
     if (err) { console.log(err); }
     else {
+        req.flash("success","Successfully Deleted the Plan")
         res.redirect("/my-account");
     }
   });
 });
+
+app.post("/my-account/fav/:id/delete",isLoggedIn, (req, res) => {
+  //findByIdAndRemove
+  Favourite.findByIdAndRemove(req.params.id, err => {
+    if (err) { console.log(err); }
+    else {
+        req.flash("success","Successfully Deleted ")
+        res.redirect("/my-account");
+    }
+  });
+});
+
 app.post("/cart/item/:i/delete",isLoggedIn, (req, res) => {
   //findByIdAndRemove
   console.log(req.user.cart);
   req.user.cart.splice(Number(req.params.i), 1);
   req.user.save()
+    req.flash("success","Successfully Deleted the Item")
   res.redirect("/cart")
 });
 //*************************************************
@@ -536,6 +577,7 @@ app.get("/grocery-product/:id",async (req,res)=>{
 app.post("/cart/grocery/:id/:un",isLoggedIn,async (req,res)=>{
   req.user.cart.push({price:req.body.price,name:req.params.un})
   req.user.save()
+    req.flash("success","Item added to Cart")
   res.redirect(`/grocery-product/${req.params.id}`)
 })
 //*************************************************

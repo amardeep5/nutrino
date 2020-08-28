@@ -11,7 +11,7 @@
              <% wines.forEach(function(wine){ %>
                <div class="col-md-4 col-sm-6" style="margin-bottom: 40px;margin-top: 40px; ">
                   <div class="card border-primary h-100 d-inline-block" >
-                    <img class="card-img-top img-fluid" src="<%=wine.imageUrl%>" alt="Card image cap">
+                    <img class="card-img-top " src="<%=wine.imageUrl%>" alt="Card image cap">
                     <div class="card-body d-flex flex-column">
                         <span class="mt-auto"><h5 class="card-title mt-auto"><%=wine.title%></h5></span>
 
@@ -29,12 +29,16 @@
   </div>
 
     <div class="row justify-content-center mt-5">
-      <div class="card card-body text-center ">
-        <h4>Dishes preffered with this wine</h4>
+      <div class="card card-body text-center " style="width:50%">
+      <div class="card-header">
+          <h4>Dishes preffered with this wine</h4>
+      </div>
         <%pairs.pairings.forEach(function(pair){%>
-          <h6><%=pair%></h6>
+          <span><h6><%=pair%></h6></span>
         <%})%>
-        <p><%=pairs.text%></p>
+        <div class="card-footer">
+          <p><%=pairs.text%></p>
+        </div>
       </div>
     </div>
   </div>
