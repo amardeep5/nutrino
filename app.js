@@ -142,7 +142,7 @@ app.get("/dish/:id/recipe/", async (req,res)=>{
   let respo=await axios.get("https://api.spoonacular.com/recipes/"+id+"/analyzedInstructions?apiKey="+api_key)
   let recipes=respo.data[0].steps;
 
-  res.render("dishes/displayrecipe",{recipes,ingredients})
+  res.render("dishes/displayrecipe",{recipes,ingredients,id})
 })
 
 let dishes
@@ -155,24 +155,27 @@ app.post("/dishes",async (req,res)=>{
    if(intolerance==="none" && diet==="none"){
       let resp=await axios.get("https://api.spoonacular.com/recipes/complexSearch?apiKey="+api_key+"&type="+type+"&cuisine="+cuisine)//+"&number=9")
        dishes=resp.data.results
-         res.render("dishes/displaydish",{dishes})
+           res.redirect("/dishes/display")
       }
       else if(intolerance==="none"){
         let resp=await axios.get("https://api.spoonacular.com/recipes/complexSearch?apiKey="+api_key+"&type="+type+"&cuisine="+cuisine+"&diet="+diet+"&intolerances="+intolerance+"&number=9")
          dishes=resp.data.results
-           res.render("dishes/displaydish",{dishes})
+             res.redirect("/dishes/display")
       }
       else if(diet==="none"){
         let resp=await axios.get("https://api.spoonacular.com/recipes/complexSearch?apiKey="+api_key+"&type="+type+"&cuisine="+cuisine+"&intolerances="+intolerance+"&number=9")
          dishes=resp.data.results
-           res.render("dishes/displaydish",{dishes})
+             res.redirect("/dishes/display")
       }
       else{
         let resp=await axios.get("https://api.spoonacular.com/recipes/complexSearch?apiKey="+api_key+"&type="+type+"&cuisine="+cuisine+"&diet="+diet+"&intolerances="+intolerance+"&number=9")
          dishes=resp.data.results
-           res.render("dishes/displaydish",{dishes})
+          res.redirect("/dishes/display")
       }
 
+})
+app.get("/dishes/display",(req,res)=>{
+   res.render("dishes/displaydish",{dishes})
 })
 app.get("/dish/:id/fav",async (req,res)=>{
    res.render("dishes/displaydish",{dishes})
@@ -383,6 +386,8 @@ app.post("/posts/:id/comments/:Cid",isLoggedIn, (req, res) => {
 
 app.post("/create-post",isLoggedIn,(req,res)=>{
   var{url,title,description}=req.body
+  // console.log(req.files);
+  // var url = req.files.img.data
   const newPost = new Post({title,url,description,like:0,author:{id:req.user._id,username:req.user.username}})
   newPost.save(err=>{
     if (err){
@@ -413,6 +418,7 @@ app.post("/post/:id/like",isLoggedIn,async (req,res)=>{
        console.log(err)
        return;}
    })
+
    req.user.favourites.push(fav)
    req.user.save(err=>{
      if (err){
