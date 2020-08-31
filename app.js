@@ -25,6 +25,10 @@ var expressSession =require("express-session")
 const api_key=process.env.API_KEY
 const secret=process.env.SECRET
 const mongoPassword=process.env.MONGO_PASSWORD
+var async = require("async");
+var nodemailer = require("nodemailer");
+var crypto = require("crypto");
+
 var MongoStore = require('connect-mongo')(expressSession);
 app.set("view engine","ejs");
 app.use(flash())
@@ -44,6 +48,7 @@ const isLoggedIn=(req,res,next)=>{
   if(req.isAuthenticated()){
     return next()
   }
+  req.flash("error","username or password is incorrect")
   res.redirect("/login")
 }
 
@@ -314,6 +319,125 @@ app.post('/signup',  (req, res) => {
 });
 
 
+app.get('/forgot', function(req, res) {
+  res.render('forgot');
+});
+
+app.post('/forgot', function(req, res, next) {
+  async.waterfall([
+    function(done) {
+      crypto.randomBytes(20, function(err, buf) {
+        var token = buf.toString('hex');
+        done(err, token);
+      });
+    },
+    function(token, done) {
+      User.findOne({ email: req.body.email }, function(err, user) {
+        if (!user) {
+          req.flash('error', 'No account with that email address exists.');
+          return res.redirect('/forgot');
+        }
+
+        user.resetPasswordToken = token;
+        user.resetPasswordExpires = Date.now() + 3600000; // 1 hour
+
+        user.save(function(err) {
+          done(err, token, user);
+        });
+      });
+    },
+    function(token, user, done) {
+      var smtpTransport = nodemailer.createTransport({
+        service: 'Gmail',
+        auth: {
+          user: 'amardeep08112000@gmail.com',
+          pass: process.env.GMAILPW
+        }
+      });
+      var mailOptions = {
+        to: user.email,
+        from: 'amardeep08112000@gmail.com',
+        subject: 'Nutrino Password Reset',
+        text: 'You are receiving this because you (or someone else) have requested the reset of the password for your account.\n\n' +
+          'Please click on the following link, or paste this into your browser to complete the process:\n\n' +
+          'http://' + req.headers.host + '/reset/' + token + '\n\n' +
+          'If you did not request this, please ignore this email and your password will remain unchanged.\n'
+      };
+      smtpTransport.sendMail(mailOptions, function(err) {
+        console.log('mail sent');
+        req.flash('success', 'An e-mail has been sent to ' + user.email + ' with further instructions. You can close this tab');
+        done(err, 'done');
+      });
+    }
+  ], function(err) {
+    if (err) return next(err);
+    res.redirect('/forgot');
+  });
+});
+
+app.get('/reset/:token', function(req, res) {
+  User.findOne({ resetPasswordToken: req.params.token, resetPasswordExpires: { $gt: Date.now() } }, function(err, user) {
+    if (!user) {
+      req.flash('error', 'Password reset token is invalid or has expired.');
+      return res.redirect('/forgot');
+    }
+    res.render('reset', {token: req.params.token});
+  });
+});
+
+app.post('/reset/:token', function(req, res) {
+  async.waterfall([
+    function(done) {
+      User.findOne({ resetPasswordToken: req.params.token, resetPasswordExpires: { $gt: Date.now() } }, function(err, user) {
+        if (!user) {
+          req.flash('error', 'Password reset token is invalid or has expired.');
+          return res.redirect('back');
+        }
+        if(req.body.password === req.body.confirm) {
+          user.setPassword(req.body.password, function(err) {
+            user.resetPasswordToken = undefined;
+            user.resetPasswordExpires = undefined;
+
+            user.save(function(err) {
+              req.logIn(user, function(err) {
+                done(err, user);
+              });
+            });
+          })
+        } else {
+            req.flash("error", "Passwords do not match.");
+            return res.redirect('back');
+        }
+      });
+    },
+    function(user, done) {
+      var smtpTransport = nodemailer.createTransport({
+        service: 'Gmail',
+        auth: {
+          user: 'amardeep08112000@gmail.com',
+          pass: process.env.GMAILPW
+        }
+      });
+      var mailOptions = {
+        to: user.email,
+        from: 'amardeep08112000@gmail.com',
+        subject: 'Your password has been changed',
+        text: 'Hello,\n\n' +
+          'This is a confirmation that the password for your account ' + user.email + ' has just been changed.\n'
+      };
+      smtpTransport.sendMail(mailOptions, function(err) {
+        req.flash('success', 'Success! Your password has been changed.');
+        done(err);
+      });
+    }
+  ], function(err) {
+    res.redirect('/');
+  });
+});
+
+
+
+
 //******************************************************
 //post routes
 
@@ -493,6 +617,23 @@ app.get("/buy/:id/:un",isLoggedIn,async (req,res)=>{
 
 app.post("/buy/confirmation",isLoggedIn,(req,res)=>{
   var {username,email}=req.body;
+  var smtpTransport = nodemailer.createTransport({
+    service: 'Gmail',
+    auth: {
+      user: 'amardeep08112000@gmail.com',
+      pass: process.env.GMAILPW
+    }
+  });
+  var mailOptions = {
+    to: user.email,
+    from: 'amardeep08112000@gmail.com',
+    subject: 'Nutrino Buy confirmation',
+    text: 'Thank You for shopping with us'
+  }
+  smtpTransport.sendMail(mailOptions, function(err) {
+    console.log('mail sent');
+    req.flash('success', 'An confirmation e-mail has been sent to ' + user.email );
+  });
   res.render("confirmation")
 })
 
