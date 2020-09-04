@@ -716,7 +716,7 @@ app.get("/grocery-product",(req,res)=>{
 
 app.post("/grocery-product",async (req,res)=>{
   var name = req.body.name;
-  const pro=await axios.get(`https://api.spoonacular.com/food/products/search?apiKey=${api_key}&query=${name}&number=2`)
+  const pro=await axios.get(`https://api.spoonacular.com/food/products/search?apiKey=${api_key}&query=${name}`)
   res.render("products/grocery",{products:pro.data.products})
 })
 app.get("/grocery-product/:id",async (req,res)=>{
