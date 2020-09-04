@@ -48,10 +48,9 @@ const isLoggedIn=(req,res,next)=>{
   if(req.isAuthenticated()){
     return next()
   }
-  req.flash("error","username or password is incorrect")
+  req.flash("error","You Should Be Logged In ")
   res.redirect("/login")
 }
-
 
 //*******************************************************
 //chat logic
@@ -606,6 +605,10 @@ app.post("/post/:id/delete",isLoggedIn, (req, res) => {
 
 //******************************************************
 //misc routes
+app.get("/contact",(req,res)=>{
+  res.render("contact")
+})
+
 app.get("/chat",isLoggedIn,(req,res)=>{
 
   res.render("chat",{trainer:req.body.trainer})
