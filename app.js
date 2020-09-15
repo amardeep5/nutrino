@@ -28,7 +28,7 @@ const mongoPassword=process.env.MONGO_PASSWORD
 var async = require("async");
 var nodemailer = require("nodemailer");
 var crypto = require("crypto");
-
+const stripe=require("stripe")(process.env.SECRET_KEY)
 var MongoStore = require('connect-mongo')(expressSession);
 app.set("view engine","ejs");
 app.use(flash())
@@ -252,8 +252,9 @@ app.post("/meal-planner",isLoggedIn, async (req,res)=>{
       if (err) return handleError(err);
       // saved!
     });
-    let resp=await axios.get("https://api.spoonacular.com/mealplanner/generate?apiKey="+api_key+"&diet="+diet+"&targetCalories="+targetCalories+"&timeFrame="+timeFrame)
+    let resp=await axios.get("https://api.spoonacular.com/mealplanner/generate?apiKey="+api_key+"&targetCalories="+targetCalories+"&timeFrame="+timeFrame)
     let meals=resp.data
+    console.log(meals);
     req.flash("success","Successfully Created Your Meal")
     res.render("meals/displayplanner",{meals})
 
@@ -609,7 +610,7 @@ app.get("/contact",(req,res)=>{
   res.render("contact")
 })
 
-app.get("/chat",isLoggedIn,(req,res)=>{
+app.post("/chat",isLoggedIn,(req,res)=>{
 
   res.render("chat",{trainer:req.body.trainer})
 })
@@ -628,14 +629,14 @@ app.post("/buy/confirmation",isLoggedIn,(req,res)=>{
     }
   });
   var mailOptions = {
-    to: user.email,
+    to: req.user.email,
     from: 'amardeep08112000@gmail.com',
     subject: 'Nutrino Buy confirmation',
     text: 'Thank You for shopping with us'
   }
   smtpTransport.sendMail(mailOptions, function(err) {
     console.log('mail sent');
-    req.flash('success', 'An confirmation e-mail has been sent to ' + user.email );
+    req.flash('success', 'An confirmation e-mail has been sent to ' + req.user.email );
   });
   res.render("confirmation")
 })
