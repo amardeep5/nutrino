@@ -1,0 +1,21 @@
+<html>
+<head>
+  <title>Checkout canceled</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <section>
+    <p>Forgot to add something to your cart? Shop around then come back to pay!</p>
+  </section>
+
+    <div class="container row justify-content-center">
+      <h1>Thank You For Shopping with Nutrino</h1>
+      <h4>you will be redirected to main page in 5 seconds</h4>
+    </div>
+    <script>
+      setTimeout(function () {
+         // after 5 seconds
+         window.location = "/landing";
+      }, 5000)
+    </script>
+<%- include('partials/footer') %>

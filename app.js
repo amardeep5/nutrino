@@ -28,7 +28,7 @@ const mongoPassword=process.env.MONGO_PASSWORD
 var async = require("async");
 var nodemailer = require("nodemailer");
 var crypto = require("crypto");
-const stripe=require("stripe")(process.env.SECRET_KEY)
+const stripe=require("stripe")(process.env.SecretKey)
 var MongoStore = require('connect-mongo')(expressSession);
 app.set("view engine","ejs");
 app.use(flash())
@@ -130,6 +130,10 @@ passport.deserializeUser(User.deserializeUser())
 //get routes
 app.get("/",(req,res)=>{
 
+  res.render("intro");
+})
+app.get("/landing",(req,res)=>{
+
   res.render("landing");
 })
 //******************************************************
@@ -223,7 +227,7 @@ app.post("/wines",async (req,res)=>{
 })
 
 
-app.post("/login",passport.authenticate("local",{successRedirect:"/",failureRedirect:"/login"}),(req,res)=>{
+app.post("/login",passport.authenticate("local",{successRedirect:"/landing",failureRedirect:"/login"}),(req,res)=>{
 
 })
 
@@ -272,7 +276,7 @@ app.get("/become-nutritionist",isLoggedIn,(req,res)=>{
      res.render("become");
  }else{
    req.flash("error","You must be registered as a Nutritionist")
-   res.redirect("/");
+   res.redirect("/landing");
  }
 })
 
@@ -294,7 +298,7 @@ app.get("/login",(req,res)=>{
 app.get("/logout",(req,res)=>{
   req.logout();
   req.flash("error","You Are Logged Out")
-  res.redirect("/")
+  res.redirect("/landing")
 })
 
 app.get("/signup",(req,res)=>{
@@ -312,7 +316,7 @@ app.post('/signup',  (req, res) => {
     }
     passport.authenticate("local")(req,res,()=>{
       req.flash("success","Successfully Signed Up")
-      res.redirect("/")
+      res.redirect("/landing")
     })
   })
 
@@ -431,7 +435,7 @@ app.post('/reset/:token', function(req, res) {
       });
     }
   ], function(err) {
-    res.redirect('/');
+    res.redirect('/landing');
   });
 });
 
@@ -614,32 +618,7 @@ app.post("/chat",isLoggedIn,(req,res)=>{
 
   res.render("chat",{trainer:req.body.trainer})
 })
-app.get("/buy/:id/:un",isLoggedIn,async (req,res)=>{
-  const resp=await axios.get(`https://api.spoonacular.com/recipes/${req.params.id}/priceBreakdownWidget.json?apiKey=${api_key}`)
-  res.render("buy",{price:resp.data.totalCost,un:req.params.un})
-})
 
-app.post("/buy/confirmation",isLoggedIn,(req,res)=>{
-  var {username,email}=req.body;
-  var smtpTransport = nodemailer.createTransport({
-    service: 'Gmail',
-    auth: {
-      user: 'amardeep08112000@gmail.com',
-      pass: process.env.GMAILPW
-    }
-  });
-  var mailOptions = {
-    to: req.user.email,
-    from: 'amardeep08112000@gmail.com',
-    subject: 'Nutrino Buy confirmation',
-    text: 'Thank You for shopping with us'
-  }
-  smtpTransport.sendMail(mailOptions, function(err) {
-    console.log('mail sent');
-    req.flash('success', 'An confirmation e-mail has been sent to ' + req.user.email );
-  });
-  res.render("confirmation")
-})
 
 app.post("/cart/:id/:un",isLoggedIn,async (req,res)=>{
   const resp=await axios.get(`https://api.spoonacular.com/recipes/${req.params.id}/priceBreakdownWidget.json?apiKey=${api_key}`)
@@ -649,12 +628,12 @@ app.post("/cart/:id/:un",isLoggedIn,async (req,res)=>{
   res.redirect(`/dish/${req.params.id}/recipe/`)
 })
 
-app.get("/cart",(req,res)=>{
+app.get("/cart",isLoggedIn,(req,res)=>{
   const items = req.user.cart;
   var total=0;
   if(items.length===0){
       req.flash("error","Cart is empty")
-    res.redirect("/")
+    res.redirect("/landing")
   }else{
     items.forEach(item=>{
       total+=Number(item.price)})
@@ -662,10 +641,71 @@ app.get("/cart",(req,res)=>{
   }
 })
 
-app.post("/cart/buy",(req,res)=>{
-    req.user.cart.splice(0,req.user.cart.length);
-    req.user.save();
-  res.render("confirmation")
+app.get("/cart/success",isLoggedIn,(req,res)=>{
+  req.user.cart.splice(0,req.user.cart.length);
+  req.user.save();
+  var smtpTransport = nodemailer.createTransport({
+      service: 'Gmail',
+      auth: {
+        user: 'amardeep08112000@gmail.com',
+        pass: process.env.GMAILPW
+      }
+    });
+    var mailOptions = {
+      to: req.user.email,
+      from: 'amardeep08112000@gmail.com',
+      subject: 'Nutrino Buy confirmation',
+      text: 'Thank You for shopping with us'
+    }
+    smtpTransport.sendMail(mailOptions, function(err) {
+      console.log('mail sent');
+      req.flash('success', 'An confirmation e-mail has been sent to ' + req.user.email );
+    });
+  res.render("success")
+})
+app.get("/cart/cancel",(req,res)=>{
+
+  res.render("failure")
+})
+
+app.post('/create-session',isLoggedIn, async (req, res) => {
+
+
+  let arr=[]
+  req.user.cart.forEach(item=>{
+    arr.push({
+      price_data: {
+        currency: 'usd',
+        product_data: {
+          name: `${item.name}`,
+          images: ['https://i.imgur.com/EHyR2nP.png'],
+        },
+        unit_amount: parseInt(`${item.price}`),
+      },
+      quantity: 1,
+    })
+  })
+
+      console.log(arr);
+      const session = await stripe.checkout.sessions.create({
+      payment_method_types: ['card'],
+      line_items: arr,
+      mode: 'payment',
+      success_url: `http://localhost:3000/cart/success`,
+      cancel_url: `http://localhost:3000/cart/cancel`,
+    });
+    console.log(session.id);
+    res.json({ id: session.id });
+
+
+});
+
+
+app.post("/cart/buy",isLoggedIn,(req,res)=>{
+    const {Name, Email,Address,State,City,Zip,Total}=req.body
+    const cart=req.user.cart;
+
+  res.render("checkout",{order:{Name, Email,Address,State,City,Zip,Total,cart},key:process.env.PublishableKey})
 
 
 })

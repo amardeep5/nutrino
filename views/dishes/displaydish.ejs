@@ -1,7 +1,7 @@
 <%- include('../partials/header') %>
 <nav aria-label="breadcrumb">
   <ol class="breadcrumb">
-    <li class="breadcrumb-item " aria-current="page"><a href="/">Home</a></li>
+    <li class="breadcrumb-item " aria-current="page"><a href="/landing">Home</a></li>
     <li class="breadcrumb-item " aria-current="page"><a href="/dishes">Dishes</a></li>
     <li class="breadcrumb-item active" aria-current="page">Results</li>
   </ol>
@@ -22,16 +22,12 @@
                       </form>
                       <hr>
                       <h5 class="card-title"><%=dish.title%></h5>
-                      <a href="/dish/<%=dish.id%>/recipe" class="btn btn-primary mt-auto" >Explore</a>
                     </div>
                     <div class="card-footer">
-                      <form class="" action="/buy/<%=dish.id%>/<%=dish.title%>" method="get">
-                        <button type="submit" class="btn btn-info btn-lg">Buy Now</button>
-                      </form>
-                      <hr>
-                      <form class="" action="/cart/<%=dish.id%>/<%=dish.title%>" method="post">
+                      <form class="" action="/cart/<%=dish.id%>/<%=dish.title%>" method="post" style="display:inline-block">
                         <button type="submit" class="btn btn-success btn-lg">Add to Cart</button>
                       </form>
+                      <a href="/dish/<%=dish.id%>/recipe" class="btn btn-primary mt-auto">Explore</a>
                     </div>
                   </div>
                  </div>

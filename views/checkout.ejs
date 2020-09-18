@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>CheckOut</title>
+    <link rel="stylesheet" href="/style.css">
+    <script src="https://kit.fontawesome.com/ea035a5efc.js" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <script src="https://polyfill.io/v3/polyfill.min.js?version=3.52.1&features=fetch"></script>
+    <script src="https://js.stripe.com/v3/"></script>
+  </head>
+  <body>
+    <div class="jumbotron jumbotron-fluid">
+      <div class="container">
+        <h1 class="display-4">CheckOut Page</h1>
+        <p class="lead">Review your Items</p>
+      </div>
+    </div>
+      <div class="container">
+        <div class="row ">
+          <%order.cart.forEach(item=>{%>
+            <div class="col-md-4 col-sm-6" style="margin-bottom: 40px;margin-top: 40px;">
+               <div class=" card border-primary h-100 d-inline-block" >
+
+                 <div class="card-body d-flex flex-column">
+                   <h5 class="card-title"><%=item.name%></h5>
+                 </div>
+                 <div class="card-footer">
+                   <h3>$ <%=item.price%></h3>
+                 </div>
+               </div>
+              </div>
+          <%})%>
+        </div>
+          <button id="checkout-button" >Checkout</button>
+      </div>
+  </body>
+  <script type="text/javascript">
+    // Create an instance of the Stripe object with your publishable API key
+    var stripe = Stripe("<%=key%>");
+    var checkoutButton = document.getElementById("checkout-button");
+    checkoutButton.addEventListener("click", function () {
+      fetch("/create-session", {
+        method: "POST",
+      })
+        .then(function (response) {
+          return response.json();
+        })
+        .then(function (session) {
+          return stripe.redirectToCheckout({ sessionId: session.id });
+        })
+        .then(function (result) {
+          // If redirectToCheckout fails due to a browser or network
+          // error, you should display the localized error message to your
+          // customer using error.message.
+          if (result.error) {
+            alert(result.error.message);
+          }
+        })
+        .catch(function (error) {
+          console.error("Error:", error);
+        });
+    });
+  </script>
+
+</html>
