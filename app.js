@@ -15,6 +15,7 @@ const io = socketio(server)
 const mongoose=require("mongoose")
 const User = require("./models/user")
 const Post = require("./models/post")
+const Order = require("./models/order")
 const Comment = require("./models/comment")
 const Planner = require("./models/planner")
 const Favourite = require("./models/favourite")
@@ -282,7 +283,7 @@ app.get("/become-nutritionist",isLoggedIn,(req,res)=>{
 
 app.get("/my-account",  (req,res)=>{
 
-  User.findById(req.user._id).populate("meals").populate("favourites").exec((err,result)=>{
+  User.findById(req.user._id).populate("meals").populate("favourites").populate("orders").exec((err,result)=>{
     res.render("myAccount",{result})
   })
 
@@ -474,6 +475,57 @@ app.get("/post/:id",isLoggedIn,async (req,res)=>{
   })
 
 })
+var good=0,bad=0;
+app.post("/posts/:id/ml/reviewAnalysis/predict",isLoggedIn,async (req,res)=>{
+  //  var post= await Post.findById(req.params.id).populate("comments")
+    Post.findById(req.params.id).populate("comments").exec((err,post)=>{
+      if(err){
+        req.flash("error","Some Error Occured")
+        console.log(err) 
+      }else{
+        
+        // axios.post("http://127.0.0.1:8080/analyze",{arr:post.comments})
+        // .then((response) => {
+        //   good=parseInt(response.data.good)
+        //   bad=parseInt(response.data.bad)
+        //   res.redirect(`/posts/${req.params.id}/ml/reviewAnalysis/predict`)
+        // }, (error) => {
+        //   console.log(error);
+        // });
+  
+        var spawn = require("child_process").spawn;
+        console.log("starting  "); 
+        var arr=[];
+        for(comm in post.comments){
+          // console.log(post.comments[comm].text);
+          arr.push(post.comments[comm].text);
+        }   
+        // console.log(arr);
+        var process = spawn('python',["./flas.py",arr]);
+        process.stdout.on('data', function(data) {       
+              // console.log("data...........",data.toString());
+              data = data.toString()
+              console.log(data);
+              console.log(typeof(JSON.parse(data)));
+              data=JSON.parse(data)
+              good=parseInt(data.good)
+              bad=parseInt(data.bad)
+              // console.log(good,bad)
+              res.redirect(`/posts/${req.params.id}/ml/reviewAnalysis/predict`)
+              return;
+            });
+
+      }
+    })
+  
+  })
+
+app.get("/posts/:id/ml/reviewAnalysis/predict",isLoggedIn,async (req,res)=>{
+  var gp=((good/(good+bad)).toFixed(2))*100;
+  var bp=((bad/(bad+good)).toFixed(2))*100;
+  
+  res.render("posts/reviewAnalysis",{gp,bp,id:req.params.id})
+})  
 
 app.get("/posts/:id/comments/new",isLoggedIn,async (req,res)=>{
   var post= await Post.findById(req.params.id)
@@ -533,6 +585,7 @@ app.post("/post/:id",isLoggedIn,async (req,res)=>{
 
 app.post("/post/:id/like",isLoggedIn,async (req,res)=>{
   const post=await Post.findById(req.params.id)
+  //removing duplicates
   post.like=post.like+Number(1)
   post.save(err=>{
     if (err){
@@ -704,7 +757,17 @@ app.post('/create-session',isLoggedIn, async (req, res) => {
 app.post("/cart/buy",isLoggedIn,(req,res)=>{
     const {Name, Email,Address,State,City,Zip,Total}=req.body
     const cart=req.user.cart;
-
+  const newOrder = new Order({name:Name, email:Email,address:Address,state:State,city:City,zip:Zip,total:Total,cart})
+  newOrder.save(err=>{
+    if (err){
+      console.log(err)
+      return;}
+  })
+  req.user.orders.push(newOrder)
+  req.user.save(function (err) {
+    if (err) return handleError(err);
+    // saved!
+  });
   res.render("checkout",{order:{Name, Email,Address,State,City,Zip,Total,cart},key:process.env.PublishableKey})
 
 

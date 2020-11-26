@@ -1,0 +1,32 @@
+<%- include('../partials/header') %>
+<nav aria-label="breadcrumb">
+  <ol class="breadcrumb">
+    <li class="breadcrumb-item " aria-current="page"><a href="/landing">Home</a></li>
+    <li class="breadcrumb-item " aria-current="page"><a href="/all-posts">Posts</a></li>
+    <li class="breadcrumb-item active" aria-current="page">Review Analysis</li>
+  </ol>
+</nav>
+<div class="container">
+    <a href="/post/<%=id%>" class="btn btn-sm btn-primary">Go Back</a>
+    <div class="row justify-content-center">
+       
+        <div class="col-md-6">
+            <div class="card mb-3 text-center bg-success" style="width: 100%">
+            <div class="card-body">
+                <h2 class="card-header">Positive Review </h2>
+                <h3 class="card-text"><%= gp %> %</h3>
+            </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card mb-3 text-center bg-danger" style="width: 100%">
+            <div class="card-body">
+                <h2 class="card-header">Negative Review </h2>
+                <h3 class="card-text"><%= bp %> %</h3>
+            </div>
+            </div>
+        </div>
+    </div> 
+</div>
+
+<%- include('../partials/footer') %>

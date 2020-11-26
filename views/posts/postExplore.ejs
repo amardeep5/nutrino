@@ -22,6 +22,11 @@
       <div class="text-right">
         <a class="btn btn-success" href="/posts/<%= post._id %>/comments/new">Add New Comment</a>
       </div>
+      <div class="text-left">
+        <form action="/posts/<%= post._id %>/ml/reviewAnalysis/predict" method="post">
+          <button class="btn btn-warning" type="submit">Analyze Comments</a>
+        </form>
+      </div>
       <hr>
       <% post.comments.forEach(function(comment){ %>
       <div class="row container">

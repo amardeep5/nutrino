@@ -24,6 +24,12 @@ var UserSchema = new mongoose.Schema({
          name:String
       }
    ],
+   orders:[
+     {
+       type: mongoose.Schema.Types.ObjectId,
+       ref: "Order"
+     }
+   ],
     isNutritionist:{type:Boolean,default:false},
     resetPasswordToken:String,
     resetPasswordExpires:Date
