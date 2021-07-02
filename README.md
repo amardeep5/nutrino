@@ -1,4 +1,3 @@
-## Nutrino
 # NUTRINO
 ![image](https://user-images.githubusercontent.com/54737753/124263271-a9f1e100-db50-11eb-8faa-daf105e3bddc.png)
 #
